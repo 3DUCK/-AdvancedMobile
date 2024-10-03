@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-<<<<<<< HEAD
 import MenuTab from './components/MenuTab';
 import DetailScreen from './components/DetailScreen';
 import CartScreen from './components/CartScreen';
+import DrinkDetailScreen from './components/DrinkDetailScreen';
+import DessertDetailScreen from './components/DessertDetailScreen';
 import { StyleSheet } from 'react-native';
 
 
@@ -30,201 +31,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" options={{ headerShown: true, title: "카페 키오스크" }}>
+        <Stack.Screen name="Home" options={{ headerShown: true, title: "키오스크" }}>
           {() => (
             <Tab.Navigator>
-=======
-import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
-import { RadioButton } from 'react-native-paper'; // 라디오 버튼 라이브러리 추가
-
-
-const Tab = createMaterialTopTabNavigator();
-const Stack = createStackNavigator(); // Stack 생성
-
-// 메뉴 데이터
-const menuData = {
-  음료: [
-    { id: 1, name: '아메리카노', image: require('./assets/coffee/1.jpg'), description: '진한 커피 맛의 아메리카노' },
-    { id: 2, name: '카페라떼', image: require('./assets/coffee/2.png'), description: '부드러운 우유와 커피의 조화' },
-    { id: 3, name: '모카', image: require('./assets/coffee/3.jpg'), description: '초콜릿과 커피의 환상적인 조화' },
-    { id: 4, name: '헤이즐넛 아메리카노', image: require('./assets/coffee/4.jpg'), description: '헤이즐넛 향이 가득한 아메리카노' },
-    { id: 5, name: '아포카토', image: require('./assets/coffee/5.jpg'), description: '아이스크림 위에 에스프레소' },
-    { id: 6, name: '아인슈페너', image: require('./assets/coffee/6.jpg'), description: '부드러운 크림과 에스프레소' },
-    { id: 7, name: '말차라떼', image: require('./assets/coffee/7.jpg'), description: '신선한 말차와 우유의 조화' },
-    { id: 8, name: '자바칩 프라푸치노', image: require('./assets/coffee/8.webp'), description: '자바칩과 우유의 시원한 음료' },
-    { id: 9, name: '고구마라떼', image: require('./assets/coffee/9.jpg'), description: '달콤한 고구마로 만든 라떼' },
-    { id: 10, name: '아이스티', image: require('./assets/coffee/10.jpg'), description: '상큼한 아이스티' },
-    { id: 11, name: '초코라떼', image: require('./assets/coffee/11.jpg'), description: '진한 초콜릿 맛의 라떼' },
-  ],
-  디저트: [
-    { id: 1, name: '케이크', image: require('./assets/desert/1.jpg'), description: '부드럽고 촉촉한 케이크' },
-    { id: 2, name: '쿠키', image: require('./assets/desert/2.jpg'), description: '바삭한 쿠키' },
-    { id: 3, name: '머핀', image: require('./assets/desert/3.jpg'), description: '다양한 맛의 머핀' },
-  ],
-};
-
-
-// 상세화면 컴포넌트
-const DetailScreen = ({ route, navigation, addToCart }) => {
-  const { item } = route.params;
-
-  const [temperature, setTemperature] = useState('HOT');
-  const [size, setSize] = useState('톨');
-  const [extraShot, setExtraShot] = useState(false);
-  const [syrup, setSyrup] = useState(false);
-
-  const handleAddToCart = () => {
-    addToCart({
-      name: item.name,
-      image: item.image, // 이미지 정보를 추가
-      temperature,
-      size,
-      extraShot,
-      syrup,
-    });
-    alert('장바구니에 담았습니다!');
-    navigation.goBack();
-  };
-
-  return (
-    <SafeAreaView style={styles.detailContainer}>
-      <Image source={item.image} style={styles.detailImage} />
-      <Text style={styles.detailText}>{item.name}</Text>
-      <Text style={styles.detailDescription}>{item.description}</Text>
-
-      <ScrollView 
-        contentContainerStyle={{ paddingBottom: 80 }} 
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text>온도 선택:</Text>
-        <RadioButton.Group onValueChange={setTemperature} value={temperature}>
-          <View style={styles.radioGroup}>
-            <View style={styles.radioItem}>
-              <RadioButton value="HOT" />
-              <Text>HOT</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="ICE" />
-              <Text>ICE</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-
-        <Text>사이즈 선택:</Text>
-        <RadioButton.Group onValueChange={setSize} value={size}>
-          <View style={styles.radioGroup}>
-            <View style={styles.radioItem}>
-              <RadioButton value="톨" />
-              <Text>톨</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="그란데" />
-              <Text>그란데</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="벤티" />
-              <Text>벤티</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-
-        <Text>샷 추가:</Text>
-        <RadioButton.Group onValueChange={(value) => setExtraShot(value === '추가')} value={extraShot ? '추가' : '없음'}>
-          <View style={styles.radioGroup}>
-            <View style={styles.radioItem}>
-              <RadioButton value="없음" />
-              <Text>없음</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="추가" />
-              <Text>추가</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-
-        <Text>시럽 추가:</Text>
-        <RadioButton.Group onValueChange={(value) => setSyrup(value === '추가')} value={syrup ? '추가' : '없음'}>
-          <View style={styles.radioGroup}>
-            <View style={styles.radioItem}>
-              <RadioButton value="없음" />
-              <Text>없음</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="추가" />
-              <Text>추가</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-      </ScrollView>
-
-      <TouchableOpacity 
-        style={styles.orderButton} 
-        onPress={handleAddToCart}
-      >
-        <Text style={styles.orderButtonText}>장바구니에 담기</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-};
-
-
-
-// MenuTab 컴포넌트
-const MenuTab = ({ navigation, category }) => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }} 
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.menuContainer}>
-          {menuData[category].map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={() => navigation.navigate('Detail', { item })}
-            >
-              <Image source={item.image} style={styles.menuImage} />
-              <Text style={styles.menuText}>{item.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-      <TouchableOpacity 
-        style={styles.orderButton}
-        onPress={() => navigation.navigate('Cart')}>
-        <Text style={styles.orderButtonText}>장바구니로 이동</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-};
-
-
-// App 컴포넌트
-export default function App() {
-  const [cartItems, setCartItems] = useState([]); // 장바구니 상태 추가
-
-  const addToCart = (item) => {
-    setCartItems([...cartItems, item]); // 장바구니에 항목 추가
-  };
-
-  const clearCart = () => {
-    setCartItems([]); // 장바구니 비우기
-  };
-
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" options={{ headerShown: false }}>
-          {() => (
-            <Tab.Navigator 
-            screenOptions={{
-              tabBarStyle: {
-                marginTop: 40, // 위에서 10픽셀 아래로 이동
-                backgroundColor: 'white', // 배경색 설정
-              },
-            }}>
->>>>>>> 050f12b4c131b7539932bae8e5901aa0bdeba273
               <Tab.Screen name="음료">
                 {(props) => (
                   <MenuTab {...props} category="음료" addToCart={addToCart} />
@@ -238,9 +47,14 @@ export default function App() {
             </Tab.Navigator>
           )}
         </Stack.Screen>
-        <Stack.Screen name="Detail" options={{ title: '상세보기' }}>
+        <Stack.Screen name="DrinkDetail" options={{ title: '음료 상세보기' }}>
           {(props) => (
-            <DetailScreen {...props} addToCart={addToCart} />
+            <DrinkDetailScreen {...props} addToCart={addToCart} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="DessertDetail" options={{ title: '디저트 상세보기' }}>
+          {(props) => (
+            <DessertDetailScreen {...props} addToCart={addToCart} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Cart">
@@ -257,49 +71,6 @@ export default function App() {
 
 
 
-<<<<<<< HEAD
-=======
-// 장바구니 화면 컴포넌트
-const CartScreen = ({ cartItems, navigation, clearCart }) => {
-  return (
-    <SafeAreaView style={styles.cartContainer}>
-      <Text style={styles.cartTitle}>장바구니</Text>
-      <ScrollView>
-        {cartItems.length === 0 ? (
-          <Text style={styles.emptyCart}>장바구니가 비어 있습니다.</Text>
-        ) : (
-          cartItems.map((item, index) => (
-            <View key={index} style={styles.cartItem}>
-              <Image source={item.image} style={styles.cartImage} />
-              <View style={styles.cartDetails}>
-                <Text>{item.name}</Text>
-                <Text>온도: {item.temperature}</Text>
-                <Text>사이즈: {item.size}</Text>
-                <Text>샷 추가: {item.extraShot ? '예' : '아니요'}</Text>
-                <Text>시럽 추가: {item.syrup ? '예' : '아니요'}</Text>
-              </View>
-            </View>
-          ))
-        )}
-      </ScrollView>
-      <TouchableOpacity 
-        style={styles.orderButton} 
-        onPress={() => {
-          alert('주문이 완료되었습니다!');
-          clearCart(); // 장바구니 비우기
-          navigation.goBack(); // 이전 화면으로 이동
-        }}
-      >
-        <Text style={styles.orderButtonText}>주문하기</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-};
-
-
-
-
->>>>>>> 050f12b4c131b7539932bae8e5901aa0bdeba273
 // 스타일 정의
 const styles = StyleSheet.create({
   menuContainer: {
