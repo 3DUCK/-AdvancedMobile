@@ -14,7 +14,7 @@ const CartScreen = ({ cartItems, navigation, clearCart }) => {
               <Image source={{ uri: item.image }} style={styles.cartImage} />
               <View style={styles.cartDetails}>
                 <Text>{item.name}</Text>
-                {item.temperature? (
+                {item.temperature? ( // 온도 옵션이 있으면 drink, 없으면 dessert로 표시
                   <>
                     <Text>온도: {item.temperature}</Text>
                     <Text>사이즈: {item.size}</Text>

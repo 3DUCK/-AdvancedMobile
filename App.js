@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import MenuTab from './components/MenuTab';
-import DetailScreen from './components/DetailScreen';
 import CartScreen from './components/CartScreen';
 import DrinkDetailScreen from './components/DrinkDetailScreen';
 import DessertDetailScreen from './components/DessertDetailScreen';
