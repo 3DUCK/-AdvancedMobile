@@ -1,173 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider } from 'react-redux';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; // 추가
+import store from './state';
 import MenuTab from './components/MenuTab';
-import CartScreen from './components/CartScreen';
 import DrinkDetailScreen from './components/DrinkDetailScreen';
 import DessertDetailScreen from './components/DessertDetailScreen';
-import { StyleSheet } from 'react-native';
+import CartScreen from './components/CartScreen';
+import CheckoutScreen from './components/CheckoutScreen';
+import MainScreen from './components/Main';
+import LoginScreen from './components/Login';
+import SignUpScreen from './components/SignUp';
+import UserScreen from './components/UserScreen';
+import AdminScreen from './components/AdminScreen';
+import { UserProvider } from './contexts/UserContext';
 
-
-// 탭 및 스택 내비게이션 생성
+// 주문 상태 관리를 위한 Context 생성
+const OrderContext = createContext();
 const Tab = createMaterialTopTabNavigator();
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
-// 앱 컴포넌트
 export default function App() {
-  const [cartItems, setCartItems] = useState([]); // 장바구니 상태 추가
+  const [cartItems, setCartItems] = useState([]);
+  const [orderStatus, setOrderStatus] = useState('주문이 접수되었습니다.');
+  const [estimatedTime, setEstimatedTime] = useState(10);
+  const [waitingCustomers, setWaitingCustomers] = useState(5);
 
-  // 장바구니에 항목 추가
   const addToCart = (item) => {
     setCartItems([...cartItems, item]);
   };
 
-  // 장바구니 비우기
   const clearCart = () => {
     setCartItems([]);
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" options={{ headerShown: true, title: "키오스크" }}>
-          {() => (
-            <Tab.Navigator>
-              <Tab.Screen name="음료">
-                {(props) => (
-                  <MenuTab {...props} category="음료" addToCart={addToCart} />
-                )}
-              </Tab.Screen>
-              <Tab.Screen name="디저트">
-                {(props) => (
-                  <MenuTab {...props} category="디저트" addToCart={addToCart} />
-                )}
-              </Tab.Screen>
-            </Tab.Navigator>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="DrinkDetail" options={{ title: '음료 상세보기' }}>
-          {(props) => (
-            <DrinkDetailScreen {...props} addToCart={addToCart} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="DessertDetail" options={{ title: '디저트 상세보기' }}>
-          {(props) => (
-            <DessertDetailScreen {...props} addToCart={addToCart} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="Cart">
-          {(props) => (
-            <CartScreen {...props} cartItems={cartItems} clearCart={clearCart} />
-          )}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <UserProvider>
+        <PaperProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <OrderContext.Provider
+              value={{ orderStatus, setOrderStatus, estimatedTime, setEstimatedTime, waitingCustomers, setWaitingCustomers }}
+            >
+              <NavigationContainer>
+                <Stack.Navigator>
+                  <Stack.Screen name="Main" component={MainScreen} />
+                  <Stack.Screen name="Login" component={LoginScreen} />
+                  <Stack.Screen name="SignUp" component={SignUpScreen} />
+                  <Stack.Screen name="Home" options={{ title: '키오스크' }}>
+                    {() => (
+                      <Tab.Navigator>
+                        <Tab.Screen name="음료">
+                          {(props) => <MenuTab {...props} category="음료" addToCart={addToCart} />}
+                        </Tab.Screen>
+                        <Tab.Screen name="디저트">
+                          {(props) => <MenuTab {...props} category="디저트" addToCart={addToCart} />}
+                        </Tab.Screen>
+                      </Tab.Navigator>
+                    )}
+                  </Stack.Screen>
+                  <Stack.Screen name="DrinkDetail" options={{ title: '음료 상세보기' }}>
+                    {(props) => <DrinkDetailScreen {...props} addToCart={addToCart} />}
+                  </Stack.Screen>
+                  <Stack.Screen name="DessertDetail" options={{ title: '디저트 상세보기' }}>
+                    {(props) => <DessertDetailScreen {...props} addToCart={addToCart} />}
+                  </Stack.Screen>
+                  <Stack.Screen name="Cart">
+                    {(props) => <CartScreen {...props} cartItems={cartItems} clearCart={clearCart} />}
+                  </Stack.Screen>
+                  <Stack.Screen name="Checkout">
+                    {(props) => (
+                      <CheckoutScreen {...props} cartItems={cartItems} onClearCart={clearCart} />
+                    )}
+                  </Stack.Screen>
+                  <Stack.Screen name="User" component={UserScreen} options={{ title: '사용자 화면' }}/>
+                  <Stack.Screen name="Admin" component={AdminScreen} options={{ title: '관리자 화면' }}/>
+                </Stack.Navigator>
+              </NavigationContainer>
+            </OrderContext.Provider>
+          </GestureHandlerRootView>
+        </PaperProvider>
+      </UserProvider>
+    </Provider>
   );
 }
 
-
-
-
-
-// 스타일 정의
-const styles = StyleSheet.create({
-  menuContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  menuItem: {
-    width: '48%', // 한 행에 메뉴 두개씩 출력npm
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  menuImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 10,
-  },
-  menuText: {
-    textAlign: 'center',
-    marginTop: 5,
-  },
-  orderButton: {
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    margin: 10,
-  },
-  orderButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  detailContainer: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 20,
-  },
-  detailImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-  },
-  detailText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  detailDescription: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  picker: {
-    height: 50,
-    width: 150,
-    marginVertical: 10,
-  },
-  radioGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  radioItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 20, // 간격 조정
-  },
-  cartContainer: {
-    flex: 1,
-    padding: 20,
-  },
-  cartTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  emptyCart: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginTop: 20,
-  },
-  cartItem: {
-    flexDirection: 'row', // 이미지와 텍스트를 나란히 배치
-    alignItems: 'center', // 세로 정렬
-    marginBottom: 15,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  cartImage: {
-    width: 50, // 이미지 크기 조정
-    height: 50, // 이미지 크기 조정
-    borderRadius: 5,
-    marginRight: 10, // 이미지와 텍스트 간격 조정
-  },
-  cartDetails: {
-    flex: 1, // 텍스트가 남은 공간을 차지하도록 설정
-  },
-});
+// Context를 가져오는 custom hook
+export function useOrder() {
+  return useContext(OrderContext);
+}

@@ -1,34 +1,16 @@
-// components/DrinkDetailScreen.js
-
 import React, { useState } from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 
-const DrinkDetailScreen = ({ route, navigation, addToCart }) => {
+const DetailScreen = ({ route, navigation, addToCart }) => {
   const { item } = route.params;
   const [temperature, setTemperature] = useState('HOT');
   const [size, setSize] = useState('톨');
   const [extraShot, setExtraShot] = useState(false);
   const [syrup, setSyrup] = useState(false);
-  const [quantity, setQuantity] = useState(1); // 수량 상태 추가
+  const [quantity, setQuantity] = useState(1); // 수량 추가
 
   const handleAddToCart = () => {
-    let unitPrice = item.price;
-
-    // 사이즈에 따른 가격 조정
-    if (size === '그란데') {
-      unitPrice += 500;
-    } else if (size === '벤티') {
-      unitPrice += 1000;
-    }
-
-    // 샷 추가에 따른 가격 조정
-    if (extraShot) {
-      unitPrice += 500;
-    }
-
-    const totalPrice = unitPrice * quantity;
-
     addToCart({
       name: item.name,
       image: item.image,
@@ -36,9 +18,9 @@ const DrinkDetailScreen = ({ route, navigation, addToCart }) => {
       size,
       extraShot,
       syrup,
-      quantity, // 수량 추가
-      unitPrice, // 단가 추가
-      price: totalPrice, // 총 가격
+      quantity, // 수량
+      price: item.price * quantity, // 총 가격 = 단가 * 수량
+      category: 'drink', // 음료로 구분
     });
     alert('장바구니에 담았습니다!');
     navigation.goBack();
@@ -75,39 +57,18 @@ const DrinkDetailScreen = ({ route, navigation, addToCart }) => {
             </View>
             <View style={styles.radioItem}>
               <RadioButton value="그란데" />
-              <Text>그란데 (+500원)</Text>
+              <Text>그란데</Text>
             </View>
             <View style={styles.radioItem}>
               <RadioButton value="벤티" />
-              <Text>벤티 (+1000원)</Text>
+              <Text>벤티</Text>
             </View>
           </View>
         </RadioButton.Group>
 
         {/* 샷 추가 */}
         <Text>샷 추가:</Text>
-        <RadioButton.Group
-          onValueChange={(value) => setExtraShot(value === '추가')}
-          value={extraShot ? '추가' : '없음'}
-        >
-          <View style={styles.radioGroup}>
-            <View style={styles.radioItem}>
-              <RadioButton value="없음" />
-              <Text>없음</Text>
-            </View>
-            <View style={styles.radioItem}>
-              <RadioButton value="추가" />
-              <Text>추가 (+500원)</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-
-        {/* 시럽 추가 */}
-        <Text>시럽 추가:</Text>
-        <RadioButton.Group
-          onValueChange={(value) => setSyrup(value === '추가')}
-          value={syrup ? '추가' : '없음'}
-        >
+        <RadioButton.Group onValueChange={(value) => setExtraShot(value === '추가')} value={extraShot ? '추가' : '없음'}>
           <View style={styles.radioGroup}>
             <View style={styles.radioItem}>
               <RadioButton value="없음" />
@@ -120,21 +81,34 @@ const DrinkDetailScreen = ({ route, navigation, addToCart }) => {
           </View>
         </RadioButton.Group>
 
-        {/* 수량 선택 */}
-        <Text>수량:</Text>
+        {/* 시럽 추가 */}
+        <Text>시럽 추가:</Text>
+        <RadioButton.Group onValueChange={(value) => setSyrup(value === '추가')} value={syrup ? '추가' : '없음'}>
+          <View style={styles.radioGroup}>
+            <View style={styles.radioItem}>
+              <RadioButton value="없음" />
+              <Text>없음</Text>
+            </View>
+            <View style={styles.radioItem}>
+              <RadioButton value="추가" />
+              <Text>추가</Text>
+            </View>
+          </View>
+        </RadioButton.Group>
+
+        {/* 수량 선택 추가 */}
+        <Text>수량 선택:</Text>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => setQuantity(Math.max(1, quantity - 1))} // 수량 감소
-          >
-            <Text style={styles.quantityButtonText}>-</Text>
+          <TouchableOpacity onPress={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}>
+            <Text style={styles.quantityButton}>-</Text>
           </TouchableOpacity>
           <Text style={styles.quantityText}>{quantity}</Text>
-          <TouchableOpacity style={styles.quantityButton} onPress={() => setQuantity(quantity + 1)}>
-            <Text style={styles.quantityButtonText}>+</Text>
+          <TouchableOpacity onPress={() => setQuantity(quantity + 1)}>
+            <Text style={styles.quantityButton}>+</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
       <TouchableOpacity style={styles.orderButton} onPress={handleAddToCart}>
         <Text style={styles.orderButtonText}>장바구니에 담기</Text>
       </TouchableOpacity>
@@ -175,21 +149,18 @@ const styles = StyleSheet.create({
   },
   quantityContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 20,
   },
   quantityButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
-  quantityButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    paddingHorizontal: 10,
   },
   quantityText: {
     fontSize: 20,
+    marginHorizontal: 20,
   },
   orderButton: {
     backgroundColor: '#007BFF',
@@ -205,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DrinkDetailScreen;
+export default DetailScreen;
